@@ -2,31 +2,29 @@ package auth
 
 import (
     "context"
+    "log"
     "os"
-    "time"
-
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
-    "go.mongodb.org/mongo-driver/bson"
 )
 
-var coll *mongo.Collection
+var client *mongo.Client
+var collection *mongo.Collection
 
 func init() {
     uri := os.Getenv("MONGODB_URI")
-    dbName := os.Getenv("MONGO_DB")
-    collName := os.Getenv("MONGO_COLLECTION")
+    db := os.Getenv("MONGO_DB")
+    coll := os.Getenv("MONGO_COLLECTION")
 
-    client, _ := mongo.NewClient(options.Client().ApplyURI(uri))
-    client.Connect(context.Background())
-    coll = client.Database(dbName).Collection(collName)
-}
+    if uri == "" || db == "" || coll == "" {
+        log.Fatal("MongoDB environment variables are not set")
+    }
 
-func ValidateAPIKey(key string) bool {
-    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-    defer cancel()
+    var err error
+    client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+    if err != nil {
+        log.Fatal(err)
+    }
 
-    var result bson.M
-    err := coll.FindOne(ctx, bson.M{"key": key, "active": true}).Decode(&result)
-    return err == nil
+    collection = client.Database(db).Collection(coll)
 }

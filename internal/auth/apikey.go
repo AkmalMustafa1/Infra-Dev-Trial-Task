@@ -4,6 +4,8 @@ import (
     "context"
     "log"
     "os"
+
+    "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -27,4 +29,18 @@ func init() {
     }
 
     collection = client.Database(db).Collection(coll)
+}
+
+// ValidateAPIKey checks if the API key exists in MongoDB
+func ValidateAPIKey(key string) bool {
+    if key == "" {
+        return false
+    }
+
+    var result bson.M
+    err := collection.FindOne(context.TODO(), bson.M{"key": key}).Decode(&result)
+    if err != nil {
+        return false
+    }
+    return true
 }

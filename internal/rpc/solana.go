@@ -10,13 +10,12 @@ import (
     "github.com/gagliardetto/solana-go/rpc"
 )
 
-// client is initialized with the RPC URL from environment variable
 var client *rpc.Client
 
 func init() {
     rpcURL := os.Getenv("RPC_URL")
     if rpcURL == "" {
-        rpcURL = rpc.MainNetBeta_RPC // fallback
+        rpcURL = rpc.MainNetBeta_RPC
     }
     client = rpc.New(rpcURL)
 }
@@ -28,12 +27,16 @@ func GetBalance(wallet string) (float64, error) {
         return 0, fmt.Errorf("invalid wallet address: %v", err)
     }
 
-    resp, err := client.GetBalance(context.Background(), pubKey)
+    // Add Commitment parameter
+    resp, err := client.GetBalance(
+        context.Background(),
+        pubKey,
+        rpc.CommitmentFinalized, // Use Finalized commitment
+    )
     if err != nil {
         return 0, fmt.Errorf("failed to fetch balance: %v", err)
     }
 
-    // Convert lamports to SOL
-    balance := float64(resp.Value) / 1e9
+    balance := float64(resp.Value) / 1e9 // lamports → SOL
     return balance, nil
 }

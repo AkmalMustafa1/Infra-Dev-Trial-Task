@@ -4,10 +4,10 @@ import (
     "encoding/json"
     "net/http"
 
-    "Infra-Dev-Trial-Task/internal/auth"
-    "Infra-Dev-Trial-Task/internal/cache"
-    "Infra-Dev-Trial-Task/internal/ratelimit"
-    "Infra-Dev-Trial-Task/internal/rpc"
+    "github.com/AkmalMustafa1/Infra-Dev-Trial-Task/internal/auth"
+    "github.com/AkmalMustafa1/Infra-Dev-Trial-Task/internal/cache"
+    "github.com/AkmalMustafa1/Infra-Dev-Trial-Task/internal/ratelimit"
+    "github.com/AkmalMustafa1/Infra-Dev-Trial-Task/internal/rpc"
 )
 
 type RequestBody struct {
